@@ -69,7 +69,10 @@ namespace AsyncReader
             {
                 if (_stopped) return;
                 
-                if (_thread is { IsAlive: false }) return;
+                if(!_thread.IsAlive)
+                {
+                    return;
+                }
                 
                 _stopped = true;
                 

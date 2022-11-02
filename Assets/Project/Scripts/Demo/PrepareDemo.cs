@@ -49,16 +49,19 @@ namespace AsyncReader.Demo
             {
                 string path = fileList.GetStreamingAssetsPath(filename);
 
+                Texture2D texture;
 #if UNITY_EDITOR_OSX
                 byte[] data = File.ReadAllBytes(path);
-                Texture2D texture = new Texture2D(0, 0);
+                texture = new Texture2D(0, 0);
                 texture.LoadImage(data);
 #else
-                using UnityWebRequest request = UnityWebRequestTexture.GetTexture(path);
 
-                await request.SendWebRequest();
 
-                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                using(UnityWebRequest request = UnityWebRequestTexture.GetTexture(path))
+                {
+                    await request.SendWebRequest();
+                    texture = DownloadHandlerTexture.GetContent(request);
+                }
 #endif
 
                 string rawSavePath = fileList.GetRawDataSavePath(filename);

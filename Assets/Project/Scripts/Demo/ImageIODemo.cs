@@ -88,20 +88,23 @@ namespace AsyncReader.Demo
             {
                 string path = fileList.GetRawDataSavePath(filename);
 
-                using AsyncFileReader reader = new AsyncFileReader();
-                (IntPtr ptr, long size) = await reader.LoadAsync(path);
 
-                sw.Restart();
-                ImageInfo info = ImageConverter.Decode(ptr, (int)size);
+                using(AsyncFileReader reader = new AsyncFileReader())
+                {
+                    (IntPtr ptr, long size) = await reader.LoadAsync(path);
 
-                Texture2D texture = new Texture2D(info.header.width, info.header.height, info.header.Format, false);
-                texture.LoadRawTextureData(info.buffer, info.fileSize);
-                texture.Apply();
-                
-                sw.Stop();
-                _loadAsyncAnalyzeData.Add(sw.ElapsedMilliseconds);
+                    sw.Restart();
+                    ImageInfo info = ImageConverter.Decode(ptr, (int)size);
 
-                CreatePreview(texture, filename);
+                    Texture2D texture = new Texture2D(info.header.width, info.header.height, info.header.Format, false);
+                    texture.LoadRawTextureData(info.buffer, info.fileSize);
+                    texture.Apply();
+                    
+                    sw.Stop();
+                    _loadAsyncAnalyzeData.Add(sw.ElapsedMilliseconds);
+
+                    CreatePreview(texture, filename);
+                }
             }
 
             Debug.Log($"Async avg [{_loadAsyncAnalyzeData.Count}]: {_loadAsyncAnalyzeData.GetAverage().ToString()}ms");
